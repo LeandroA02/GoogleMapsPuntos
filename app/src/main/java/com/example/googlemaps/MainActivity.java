@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -19,6 +21,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +30,9 @@ public class MainActivity extends AppCompatActivity
 implements OnMapReadyCallback, GoogleMap.OnMapClickListener
 {
     GoogleMap Mapa;
-    List<LatLng> Lista;
+
+    int contador;
+    ArrayList<LatLng> puntos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +42,10 @@ implements OnMapReadyCallback, GoogleMap.OnMapClickListener
                 getSupportFragmentManager()
                         .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Lista=new ArrayList<>();
+
+        contador =0;
+        puntos =new ArrayList<LatLng>();
+
     }
 
     @Override
@@ -48,47 +57,72 @@ implements OnMapReadyCallback, GoogleMap.OnMapClickListener
         //Mover el mapa a una ubicacion
         CameraUpdate camUpd1 =
                 CameraUpdateFactory
-                        .newLatLngZoom(new LatLng(40.689377979707885, -74.04424526217305), 19);
+                        .newLatLngZoom(new LatLng(-1.0126093556377402, -79.46924565879871), 19);
         Mapa.moveCamera(camUpd1);
-        LatLng madrid = new LatLng(40.689377979707885, -74.04424526217305);
-        CameraPosition camPos = new CameraPosition.Builder()
-                .target(madrid)
-                .zoom(19)
-                .bearing(45) //noreste arriba
-                .tilt(70) //punto de vista de la cámara 70 grados
-                .build();
-        CameraUpdate camUpd3 =
-                CameraUpdateFactory.newCameraPosition(camPos);
-        Mapa.animateCamera(camUpd3);
+
         Mapa.setOnMapClickListener(this);
 
-
     }
+    /*ghhhh
+    ghhhhh
+        hhh*/
 
 
     @Override
     public void onMapClick(@NonNull LatLng latLng) {
 
+        TextView lbLati = findViewById(R.id.lbLatitud);
+        lbLati.setText(String.format("%.4f", latLng.latitude));
 
-        LatLng punto= new LatLng(latLng.latitude, latLng.longitude);
-        Mapa.addMarker(new MarkerOptions().position(punto).title("punto"));
+        TextView lbLon = findViewById(R.id.lbLongitud);
+        lbLon.setText(String.format("%.4f", latLng.longitude));
 
+        Mapa.addMarker(new MarkerOptions().position(latLng)
+                .title("Marcador"));
 
-Lista.add(latLng);
-if(Lista.size()==6) {
-    PolylineOptions lineas = new
-            PolylineOptions()
-            .add(new LatLng(Lista.get(0).latitude, Lista.get(0).longitude))
-            .add(new LatLng(Lista.get(1).latitude, Lista.get(1).longitude))
-            .add(new LatLng(Lista.get(2).latitude, Lista.get(2).longitude))
-            .add(new LatLng(Lista.get(3).latitude, Lista.get(3).longitude))
-            .add(new LatLng(Lista.get(4).latitude, Lista.get(4).longitude))
-            .add(new LatLng(Lista.get(5).latitude, Lista.get(5).longitude))
-            .add(new LatLng(Lista.get(0).latitude, Lista.get(0).longitude));
-    lineas.width(8);
-    lineas.color(Color.RED);
-    Mapa.addPolyline(lineas);
-    Lista.clear();
-}
+        contador = contador +1;
+        puntos.add(latLng);
+        if (contador==4){
+            PolylineOptions lineas = new
+                    PolylineOptions()
+                    .add(puntos.get(0))
+                    .add(puntos.get(1))
+                    .add(puntos.get(2))
+                    .add(puntos.get(3))
+                    .add(puntos.get(0));
+            lineas.width(8);
+            lineas.color(Color.RED);
+            Mapa.addPolyline(lineas);
+
+            contador= 0;
+            puntos.clear();
+
+        }
     }
+
+    public void PintarRecUTEQ(View view) {
+        Mapa.addMarker(new MarkerOptions().position(
+                new LatLng(-1.012074934779557, -79.47086353352543)));
+        Mapa.addMarker(new MarkerOptions().position(
+                new LatLng(-1.0129549240730638, -79.47091098362901)));
+        Mapa.addMarker(new MarkerOptions().position(
+                new LatLng(-1.0129750203063144, -79.4686930128605)));
+        Mapa.addMarker(new MarkerOptions().position(
+                new LatLng(-1.012265960930701, -79.46854722858969)));
+
+
+
+        PolylineOptions lineas = new
+                PolylineOptions()
+                .add(new LatLng(-1.012074934779557, -79.47086353352543))
+                .add(new LatLng(-1.0129549240730638, -79.47091098362901))
+                .add(new LatLng(-1.0129750203063144, -79.4686930128605))
+                .add(new LatLng(-1.012265960930701, -79.46854722858969))
+                .add(new LatLng(-1.012074934779557, -79.47086353352543));
+        lineas.width(8);
+        lineas.color(Color.RED);
+        Mapa.addPolyline(lineas);
+
+}
+
 }
